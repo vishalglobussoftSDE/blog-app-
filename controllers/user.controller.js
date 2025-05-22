@@ -1,13 +1,14 @@
 // controllers/user.controller.js
 import UserModel from "../models/user.model.js";
-
+import {loginSchema , signUpSchema} from "../helper/feild.validate.js";
 export const register = async (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    return res.status(400).send('All fields are required');
+  const { error, value } = signUpSchema.validate(req.body);
+  if (error) {
+    return res.status(400).send(error.details[0].message);
   }
+  const { email, password, name } = value;
   try {
-    const user = new UserModel({ email, password });
+    const user = new UserModel({ email, password, name });
     await user.save();
     res.send(`User registered with email: ${user.email}`);
   } catch (error) {
@@ -16,17 +17,18 @@ export const register = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    return res.status(400).send('All fields are required');
+  const { error, value } = loginSchema.validate(req.body);
+  if (error) {
+    return res.status(400).send(error.details[0].message);
   }
+  const { email, password } = value;
   try {
     const user = await UserModel.findOne({ email });
     if (!user) {
       return res.status(401).send('User not found');
     }
     if (user.password === password) {
-      return res.send('User logged in successfully');
+      return res.send(`User logged in successfully email : ${email}`);
     } else {
       return res.status(401).send('Invalid password');
     }
