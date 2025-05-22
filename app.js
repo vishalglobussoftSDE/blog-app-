@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import userRoutes from './routes/user.routes.js'
+import postRoutes from './routes/post.route.js'
 import connectDB from './config/db.config.js';
 // Load environment variables
 const initServer = ()=>{
@@ -17,6 +18,7 @@ const initServer = ()=>{
       res.send('Hello World!');
     });
     app.use('/auth' , userRoutes);
+    app.use('/post' , postRoutes);
     app.listen(PORT, () => {
       console.log(`Server is running on port http://localhost:${PORT}`);
     });
