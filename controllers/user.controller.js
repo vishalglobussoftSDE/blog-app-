@@ -1,6 +1,7 @@
 // controllers/user.controller.js
 import UserModel from "../models/user.model.js";
 import {loginSchema , signUpSchema} from "../helper/feild.validate.js";
+import jwt from "jsonwebtoken";
 export const register = async (req, res) => {
   const { error, value } = signUpSchema.validate(req.body);
   if (error) {
@@ -15,7 +16,6 @@ export const register = async (req, res) => {
     res.status(500).send('Error registering user: ' + error.message);
   }
 };
-
 export const login = async (req, res) => {
   const { error, value } = loginSchema.validate(req.body);
   if (error) {
@@ -28,7 +28,13 @@ export const login = async (req, res) => {
       return res.status(401).send('User not found');
     }
     if (user.password === password) {
-      return res.send(`User logged in successfully email : ${email}`);
+      const jwtSecret = process.env.JWT_SECRET;
+      const token = jwt.sign(
+        { id: user._id, email: user.email },
+        jwtSecret,
+        { expiresIn: "1h" }
+      );
+      return res.json({ message: "User logged in successfully", token });
     } else {
       return res.status(401).send('Invalid password');
     }
