@@ -1,6 +1,6 @@
 // controllers/user.controller.js
 import UserModel from "../models/user.model.js";
-import {loginSchema , signUpSchema} from "../helper/feild.validate.js";
+import { loginSchema, signUpSchema } from "../helper/feild.validate.js";
 import jwt from "jsonwebtoken";
 export const register = async (req, res) => {
   const { error, value } = signUpSchema.validate(req.body);
@@ -34,11 +34,25 @@ export const login = async (req, res) => {
         jwtSecret,
         { expiresIn: "1h" }
       );
-      return res.json({ message: "User logged in successfully", token });
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 60 * 60 * 1000 
+      });
+      return res.json({ message: "User logged in successfully" });
     } else {
       return res.status(401).send('Invalid password');
     }
   } catch (error) {
     return res.status(500).send('Error logging in: ' + error.message);
   }
+};
+export const logout = (req, res) => {
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict'
+  });
+  return res.json({ message: 'User logged out successfully' });
 };
