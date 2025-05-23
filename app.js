@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import userRoutes from './routes/user.routes.js'
 import postRoutes from './routes/post.route.js'
 import connectDB from './config/db.config.js';
+import cookieParser from 'cookie-parser';
 // Load environment variables
 const initServer = ()=>{
     dotenv.config();
@@ -12,7 +13,7 @@ const initServer = ()=>{
     
     // Middleware
     app.use(express.json());
-    
+    app.use(cookieParser());
     // Basic route
     app.get('/', (req, res) => {
       res.send('Hello World!');

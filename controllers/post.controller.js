@@ -1,7 +1,7 @@
 import PostModel from "../models/post.model.js";
 export const createPost = async (req, res) => {
     const { title, content, author } = req.body;
-    if (!title || !content || !author) {
+    if (!title || !content || author) {
         return res.status(400).json({ error: "Title, content, and author are required." });
     }
     try {
